@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim"
-version = "0.18.1"
+version = "0.18.1.dev1"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers <contact@manim.community>", "3b1b <grant@3blue1brown.com>"]
 license="MIT"
@@ -27,7 +27,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.14"
+python = ">=3.10,<3.14"
 av = ">=9.0.0"
 click = ">=8.0"
 cloup = ">=2.0.0"
