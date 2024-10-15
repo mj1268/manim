@@ -27,6 +27,8 @@ Examples
 
 from __future__ import annotations
 
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+
 __all__ = [
     "FocusOn",
     "Indicate",
@@ -37,6 +39,7 @@ __all__ = [
     "Circumscribe",
     "Wiggle",
     "Blink",
+    "Aura",
 ]
 
 from collections.abc import Iterable
@@ -61,6 +64,7 @@ from ..animation.updaters.update import UpdateFromFunc
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW, ParsableManimColor
 from ..utils.rate_functions import smooth, there_and_back, wiggle
@@ -710,3 +714,65 @@ class Blink(Succession):
             )
 
         super().__init__(*animations, **kwargs)
+
+
+class Aura(AnimationGroup):
+
+    r"""Radiate the outline of the mobject outward while fading.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to pulse.
+    scale
+        The factor by which the aura will be scaled from the original mobject.
+    color
+        The color of the surrounding shape. If not provided, it will be the stroke color, if not fill color, of the mobject.
+    run_time
+        The duration of the entire animation.
+    kwargs
+        Additional arguments to be passed to the :class:`~.Succession` constructor
+
+    Examples
+    --------
+
+    .. manim:: UsingAura
+
+        class UsingAura(Scene):
+            def construct(self):
+                lbl = Text("Aura", color=BLUE).scale(2)
+                self.add(lbl)
+                self.play(Aura(lbl))
+                self.play(Aura(lbl, color=RED))
+
+    """
+
+    def __init__(
+        self,
+        mobject: Mobject,
+        scale: float = 1.5,
+        color: ParsableManimColor | None = None,
+        run_time=1.0,
+        rate_func=smooth,
+        **kwargs,
+    ):
+        aura = mobject.copy()
+        self.mobject = aura
+        color = color or mobject.get_color()
+
+        animation = aura.animate.scale(scale).set_opacity(0.0).set_color(color)
+
+        if isinstance(mobject, (VMobject, OpenGLVMobject)):
+            aura.set_fill(opacity=0)
+            animation = animation.set_stroke(color=color)
+
+        super().__init__(
+            animation,
+            run_time=run_time,
+            rate_func=rate_func,
+            **kwargs,
+        )
+
+    def clean_up_from_scene(self, scene: Scene) -> None:
+        super().clean_up_from_scene(scene)
+        scene.remove(self.mobject)
