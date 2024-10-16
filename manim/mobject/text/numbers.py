@@ -15,6 +15,7 @@ from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 string_to_mob_map = {}
 
@@ -134,6 +135,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
         self._set_submobjects_from_number(number)
         self.init_colors()
+        # print('(__init__) Decimal stroke width post-init_colors: ', self.stroke_width)
 
     @property
     def font_size(self):

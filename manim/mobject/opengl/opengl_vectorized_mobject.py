@@ -266,14 +266,18 @@ class OpenGLVMobject(OpenGLMobject):
                 )
 
         self.set_rgba_array(color, opacity, "stroke_rgba", recurse)
+        family = self.get_family(recurse)
 
         if width is not None:
-            for mob in self.get_family(recurse):
-                mob.stroke_width = np.array([[width] for width in tuplify(width)])
+            # If width is already a numpy array, assume it's already correctly formatted.
+            new_width = np.array([[w] for w in tuplify(width)]) if not np.issubdtype(type(width), np.ndarray) else width
+            for mob in family:
+                mob.stroke_width = new_width
 
         if background is not None:
-            for mob in self.get_family(recurse):
+            for mob in family:
                 mob.draw_stroke_behind_fill = background
+
         return self
 
     def set_style(
